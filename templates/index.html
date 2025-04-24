@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.N.A.P</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>S.N.A.P</h1>
+            <p class="subtitle">Spectrogram-based Neural Accent Predictor</p>
+        </header>
+
+        <main>
+            <!-- Initial Recording Screen -->
+            <div id="recordingScreen" class="recording-section">
+                <div class="recording-options">
+                    <div class="option-header">
+                        <h3>Choose how you want to speak:</h3>
+                    </div>
+                    <div class="option-buttons">
+                        <button id="providedSentenceBtn" class="option-button active">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Use Provided Sentence</span>
+                        </button>
+                        <button id="speakFreelyBtn" class="option-button">
+                            <i class="fas fa-microphone-alt"></i>
+                            <span>Speak Freely</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="providedSentenceSection" class="practice-sentence-container">
+                    <h3>Read this sentence aloud:</h3>
+                    <div id="practiceSentence" class="practice-sentence"></div>
+                    <div class="sentence-refresh">
+                        <button id="newSentenceButton" class="refresh-button">
+                            <i class="fas fa-sync-alt"></i> New Sentence
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="speakFreelySection" class="practice-sentence-container" style="display: none;">
+                    <h3>Speak freely in English:</h3>
+                    <div class="practice-sentence">
+                        Speak naturally for at least 5-10 seconds to get the best analysis of your accent.
+                        <span class="transcription-note">Your speech will be transcribed in real-time as you speak.</span>
+                    </div>
+                </div>
+
+                <div class="record-button-container">
+                    <button id="recordButton" class="record-button">
+                        <span class="record-icon"></span>
+                        Start Recording
+                    </button>
+                    <div id="recordingStatus" class="recording-status"></div>
+                </div>
+                <div class="timer" id="timer">00:00</div>
+            </div>
+
+            <!-- Reading Prompt Screen -->
+            <div id="readingScreen" class="reading-section" style="display: none;">
+                <div class="oracle-message">
+                    <div class="oracle-avatar"></div>
+                    <div class="oracle-text">
+                        <div class="oracle-name">The Oracle</div>
+                        Read this passage aloud and I'll analyze your accent.
+                    </div>
+                </div>
+
+                <div class="reading-prompt">
+                    A brisk wind swept the dry cliffs, tossing dust and grit into 
+                    the thin blue sky. Rocks cracked underfoot, and sharp 
+                    shadows fell across jagged peaks. The bright sun gleamed 
+                    off the stark ridge above.
+                </div>
+
+                <div class="mic-button" id="micButton">
+                    <i class="fas fa-microphone mic-icon"></i>
+                </div>
+                <p>Tap to speak</p>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="resultsScreen" class="results-section" style="display: none;">
+                <!-- Accent Result - Moving to the top -->
+                <div class="accent-result" id="accentResult"></div>
+                
+                <div class="accent-message">
+                    Your accent is <span class="accent-emphasis" id="accentName"></span>. I've identified 
+                    these unique speech patterns based on spectrograms.
+                </div>
+                
+                <!-- Voice Recording Playback -->
+                <div class="audio-playback-container">
+                    <div class="playback-header">
+                        <h3>Your Recording</h3>
+                    </div>
+                    <div class="playback-visualization">
+                        <audio id="recordingPlayback" controls></audio>
+                        <div id="transcriptContainer" class="transcript-container">
+                            <p id="transcriptText" class="transcript-text"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Voice Visualization with toggle icon -->
+                <div class="spectrogram-container">
+                    <div class="spectrogram-header">
+                        <h3>Voice Signature</h3>
+                        <button id="toggleSpectrogram" class="toggle-button" title="Click to zoom into spectrogram">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                    </div>
+                    <div class="spectrogram-visual" id="spectrogramVisual">
+                        <img id="spectrogramImage" src="" alt="Voice Visualization">
+                        <div class="spectrogram-overlay"></div>
+                        <div class="spectrogram-label">Your Voice Signature</div>
+                    </div>
+                </div>
+                
+                <!-- Accuracy Section -->
+                <div class="accuracy-container">
+                    <div class="accuracy-header">
+                        <h3>Analysis Accuracy</h3>
+                        <div class="accuracy-score">
+                            <span id="confidenceValue" class="accuracy-percentage">0%</span>
+                        </div>
+                    </div>
+                    <div class="accuracy-meter-container">
+                        <div class="accuracy-scale">
+                            <span>Low</span>
+                            <span>Medium</span>
+                            <span>High</span>
+                        </div>
+                        <div class="accuracy-meter">
+                            <div id="confidenceBar" class="accuracy-fill"></div>
+                            <div class="accuracy-marker low"></div>
+                            <div class="accuracy-marker medium"></div>
+                            <div class="accuracy-marker high"></div>
+                        </div>
+                        <div class="accuracy-description">
+                            Indicates how confidently we detected your accent pattern
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-container">
+                    <button class="action-button share-button" id="shareButton">
+                        <i class="fas fa-share-alt"></i> Share Results
+                    </button>
+                    <button class="action-button try-again-button" id="tryAgainButton">
+                        <i class="fas fa-redo"></i> Try Again
+                    </button>
+                </div>
+                
+                <div class="oracle-message">
+                    <div class="oracle-avatar modern"></div>
+                    <div class="oracle-text">
+                        <div class="oracle-name">Voice Sage</div>
+                        Was my analysis accurate?
+                    </div>
+                </div>
+                
+                <div class="feedback-buttons">
+                    <button class="feedback-button correct" id="correctButton">
+                        <i class="fas fa-check"></i> Correct Analysis
+                    </button>
+                    <button class="feedback-button wrong" id="wrongButton">
+                        <i class="fas fa-times"></i> Needs Improvement
+                    </button>
+                </div>
+            </div>
+
+            <!-- Legacy Results Section (Hidden, Keeping for JS compatibility) -->
+            <div class="results-section" id="legacyResultsSection" style="display: none;">
+                <div class="spectrogram-container">
+                    <h2>Your Voice Spectrogram</h2>
+                    <img id="legacySpectrogramImage" src="" alt="Spectrogram">
+                </div>
+                
+                <div class="prediction-container">
+                    <h2>Accent Analysis Results</h2>
+                    <div class="prediction-card">
+                        <div class="prediction-label">Detected Accent:</div>
+                        <div id="predictedAccent" class="prediction-value"></div>
+                        <div class="confidence-meter">
+                            <div class="confidence-label">Confidence:</div>
+                            <div class="confidence-bar">
+                                <div id="confidenceBar" class="confidence-fill"></div>
+                            </div>
+                            <div id="confidenceValue" class="confidence-value"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Analyzing your accent patterns...</p>
+        </div>
+        
+        <!-- Feedback Modal for accent selection -->
+        <div id="feedbackModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Select Your Actual Accent</h3>
+                    <button id="closeModal" class="close-button">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Please select your actual accent to help us improve:</p>
+                    <div id="accentOptions" class="accent-options">
+                        <!-- Options will be populated dynamically from available accents -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="submitFeedback" class="submit-button">Submit Feedback</button>
+                    <button id="cancelFeedback" class="cancel-button">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debug Information Display -->
+    <div id="debugInfo" class="debug-info" style="display: none;">
+        <p>Debug Mode Active</p>
+        <div id="debugOutput">Click elements to test</div>
+    </div>
+
+    <script src="{{ url_for('static', filename='simple-script.js') }}"></script>
+</body>
+</html> 
