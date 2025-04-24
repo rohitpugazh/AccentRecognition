@@ -39,7 +39,7 @@ app.debug = False  # Disable debug mode
 try:
     model_path = os.path.join(
         os.path.dirname(__file__), 
-        "Wav2Vec2/wav2vec2-accent-cls/"
+        "wav2vec2-accent-cls/"
     )
     logger.info(f"Looking for model at: {model_path}")
     
@@ -183,21 +183,18 @@ def predict_accent(audio_data, content_type):
             logits = model(input_values).logits
             probabilities = torch.softmax(logits, dim=1)[0]
             predicted_id = torch.argmax(logits, dim=1).item()
-            confidence = probabilities[predicted_id].item()
+            confidence = round(probabilities[predicted_id].item() * 100, 2)
         
         predicted_accent = class_labels[predicted_id]
-        # Ensure confidence is between 1% and 100%
-        confidence_percent = min(100.0, round(confidence * 100, 2))
-        confidence_percent = max(1.0, confidence_percent)
         
         # Clean up
         os.unlink(temp_wav_path)
         
         logger.info(
             f"Prediction completed: {predicted_accent} "
-            f"with confidence {confidence_percent}%"
+            f"with confidence {confidence}%"
         )
-        return predicted_accent, confidence_percent, spectrogram_base64
+        return predicted_accent, confidence, spectrogram_base64
 
     except Exception as e:
         logger.error(f"Error in prediction: {str(e)}", exc_info=True)

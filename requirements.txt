@@ -3,6 +3,6 @@ librosa==0.11.0
 matplotlib==3.10.1
 numpy==2.2.5
 pydub==0.25.1
-torch==2.7.0
-torchaudio==2.7.0
-transformers==4.51.3
+torch==2.5.1+cu121
+torchaudio==2.5.1+cu121
+transformers==4.50.0
