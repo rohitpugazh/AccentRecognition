@@ -15,7 +15,7 @@ This project fine-tunes [facebook/wav2vec2-base](https://huggingface.co/facebook
 
 ## 🖥️ Run Locally
 
-- read [Download `model.safetensors`](#Download `model.safetensors`)
+- read [Download `model.safetensors`](#download-modelsafetensors)
 ```bash
 pip install -r requirements.txt
 python app.py
