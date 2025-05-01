@@ -13,6 +13,12 @@ This project fine-tunes [facebook/wav2vec2-base](https://huggingface.co/facebook
 
 ---
 
+## 🎥 Demo
+
+[![Watch the demo](https://img.youtube.com/vi/Nxomklotd_Y/0.jpg)](https://www.youtube.com/watch?v=Nxomklotd_Y)
+
+---
+
 ## 🖥️ Run Locally
 
 - read [Download model.safetensors](#-download-modelsafetensors)
