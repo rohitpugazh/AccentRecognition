@@ -15,6 +15,7 @@ This project fine-tunes [facebook/wav2vec2-base](https://huggingface.co/facebook
 
 ## 🖥️ Run Locally
 
+- read [Download `model.safetensors`](#Download `model.safetensors`)
 ```bash
 pip install -r requirements.txt
 python app.py
@@ -49,6 +50,20 @@ wav2vec2-accent-cls/
 ├── model.safetensors
 ├── config.json
 ├── preprocessor_config.json
+```
+
+### 📥 Download `model.safetensors`
+
+Due to GitHub’s file size limits, `model.safetensors` must be downloaded manually:
+
+➡️ [Download model.safetensors from Google Drive](https://drive.google.com/file/d/1PQ5pVVh2T7_CaDFntOQOLJWmp7ecOnPl/view?usp=drive_link)
+
+Place it in the following directory:
+
+```
+AccentRecognition/
+└── wav2vec2-accent-cls/
+    └── model.safetensors
 ```
 
 ---
