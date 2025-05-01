@@ -42,7 +42,7 @@ Trained on the [**Common Voice 20.0**](https://commonvoice.mozilla.org/en/datase
 
 ## 📦 Files for Inference
 
-Only the following files are required to use the model:
+These files are required to use the model:
 
 ```
 wav2vec2-accent-cls/
